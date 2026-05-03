@@ -1,0 +1,322 @@
+{
+  "participants": {
+    "JOSE": {
+      "name": "JOSE",
+      "globalRank": 1,
+      "globalPoints": 124,
+      "championships": [
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "conferenceChampionships": [
+        2019,
+        2022,
+        2025
+      ],
+      "mvps": [],
+      "mvpPlayoffs": [
+        2019,
+        2024
+      ],
+      "jokicLeague": []
+    },
+    "TOTTI": {
+      "name": "TOTTI",
+      "globalRank": 2,
+      "globalPoints": 104,
+      "championships": [
+        2018,
+        2019
+      ],
+      "conferenceChampionships": [
+        2018,
+        2019,
+        2020,
+        2021,
+        2026
+      ],
+      "mvps": [
+        2018,
+        2021,
+        2026
+      ],
+      "mvpPlayoffs": [
+        2018,
+        2021
+      ],
+      "jokicLeague": []
+    },
+    "COLLERA": {
+      "name": "COLLERA",
+      "globalRank": 3,
+      "globalPoints": 88,
+      "championships": [
+        2023
+      ],
+      "conferenceChampionships": [
+        2022,
+        2024
+      ],
+      "mvps": [
+        2022,
+        2024
+      ],
+      "mvpPlayoffs": [
+        2023
+      ],
+      "jokicLeague": []
+    },
+    "KELE": {
+      "name": "KELE",
+      "globalRank": 4,
+      "globalPoints": 85,
+      "championships": [
+        2026
+      ],
+      "conferenceChampionships": [
+        2018,
+        2020,
+        2025,
+        2026
+      ],
+      "mvps": [
+        2019,
+        2025
+      ],
+      "mvpPlayoffs": [
+        2022
+      ],
+      "jokicLeague": []
+    },
+    "CHALLEN": {
+      "name": "CHALLEN",
+      "globalRank": 5,
+      "globalPoints": 61,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": [
+        2025,
+        2026
+      ]
+    },
+    "JOTA": {
+      "name": "JOTA",
+      "globalRank": 6,
+      "globalPoints": 59,
+      "championships": [],
+      "conferenceChampionships": [
+        2021,
+        2023,
+        2024
+      ],
+      "mvps": [
+        2023
+      ],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "MUSTI": {
+      "name": "MUSTI",
+      "globalRank": 7,
+      "globalPoints": 44,
+      "championships": [],
+      "conferenceChampionships": [
+        2023
+      ],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "MARCOS": {
+      "name": "MARCOS",
+      "globalRank": 8,
+      "globalPoints": 30,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "ILDKRAFT": {
+      "name": "ILDKRAFT",
+      "globalRank": 9,
+      "globalPoints": 15,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "IVÁN": {
+      "name": "IVÁN",
+      "globalRank": 10,
+      "globalPoints": 15,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [
+        2025
+      ],
+      "jokicLeague": [
+        2024
+      ]
+    },
+    "RACRACK": {
+      "name": "RACRACK",
+      "globalRank": 11,
+      "globalPoints": 15,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "ÁNGEL": {
+      "name": "ÁNGEL",
+      "globalRank": 12,
+      "globalPoints": 15,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "CRISTIAN": {
+      "name": "CRISTIAN",
+      "globalRank": 13,
+      "globalPoints": 12,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "JAVI": {
+      "name": "JAVI",
+      "globalRank": 14,
+      "globalPoints": 12,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "YERCA": {
+      "name": "YERCA",
+      "globalRank": 15,
+      "globalPoints": 12,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "MELKART": {
+      "name": "MELKART",
+      "globalRank": 16,
+      "globalPoints": 0,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    },
+    "FOCHY": {
+      "name": "FOCHY",
+      "globalRank": 17,
+      "globalPoints": 0,
+      "championships": [],
+      "conferenceChampionships": [],
+      "mvps": [],
+      "mvpPlayoffs": [],
+      "jokicLeague": []
+    }
+  },
+  "seasons": {
+    "2018": {
+      "year": 2018,
+      "champion": "TOTTI",
+      "conferenceA": "TOTTI",
+      "conferenceB": "KELE",
+      "mvp": "TOTTI",
+      "mvpPlayoff": "TOTTI",
+      "jokicLeague": null
+    },
+    "2019": {
+      "year": 2019,
+      "champion": "TOTTI",
+      "conferenceA": "TOTTI",
+      "conferenceB": "JOSE",
+      "mvp": "KELE",
+      "mvpPlayoff": "JOSE",
+      "jokicLeague": null
+    },
+    "2020": {
+      "year": 2020,
+      "champion": null,
+      "conferenceA": "TOTTI",
+      "conferenceB": "KELE",
+      "mvp": null,
+      "mvpPlayoff": null,
+      "jokicLeague": null
+    },
+    "2021": {
+      "year": 2021,
+      "champion": "JOSE",
+      "conferenceA": "TOTTI",
+      "conferenceB": "JOTA",
+      "mvp": "TOTTI",
+      "mvpPlayoff": "TOTTI",
+      "jokicLeague": null
+    },
+    "2022": {
+      "year": 2022,
+      "champion": "JOSE",
+      "conferenceA": "COLLERA",
+      "conferenceB": "JOSE",
+      "mvp": "COLLERA",
+      "mvpPlayoff": "KELE",
+      "jokicLeague": null
+    },
+    "2023": {
+      "year": 2023,
+      "champion": "COLLERA",
+      "conferenceA": "MUSTI",
+      "conferenceB": "JOTA",
+      "mvp": "JOTA",
+      "mvpPlayoff": "COLLERA",
+      "jokicLeague": null
+    },
+    "2024": {
+      "year": 2024,
+      "champion": "JOSE",
+      "conferenceA": "COLLERA",
+      "conferenceB": "JOTA",
+      "mvp": "COLLERA",
+      "mvpPlayoff": "JOSE",
+      "jokicLeague": "IVÁN"
+    },
+    "2025": {
+      "year": 2025,
+      "champion": "JOSE",
+      "conferenceA": "KELE",
+      "conferenceB": "JOSE",
+      "mvp": "KELE",
+      "mvpPlayoff": "IVÁN",
+      "jokicLeague": "CHALLEN"
+    },
+    "2026": {
+      "year": 2026,
+      "champion": "KELE",
+      "conferenceA": "TOTTI",
+      "conferenceB": "KELE",
+      "mvp": "TOTTI",
+      "mvpPlayoff": null,
+      "jokicLeague": "CHALLEN"
+    }
+  }
+}
