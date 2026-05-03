@@ -99,7 +99,6 @@
       "mvps": [],
       "mvpPlayoffs": [],
       "jokicLeague": [
-        2025,
         2026
       ]
     },
@@ -162,7 +161,8 @@
         2025
       ],
       "jokicLeague": [
-        2024
+        2024,
+        2025
       ]
     },
     "RACRACK": {
@@ -307,7 +307,7 @@
       "conferenceB": "JOSE",
       "mvp": "KELE",
       "mvpPlayoff": "IVÁN",
-      "jokicLeague": "CHALLEN"
+      "jokicLeague": "IVÁN"
     },
     "2026": {
       "year": 2026,

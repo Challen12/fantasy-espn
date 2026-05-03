@@ -9,12 +9,43 @@
 
 ## Prompt 2 - 2026-05-03
 **Cambios aplicados:**
-- Sincronizaci髇 del proyecto con GitHub (git add, commit, push).
+- Sincronizaci贸n del proyecto con GitHub (git add, commit, push).
 
 ## Prompt 3 - 2026-05-03
 **Cambios aplicados:**
-- Explicaci髇 y resoluci髇 del problema de despliegue en GitHub Pages.
+- Explicaci贸n y resoluci贸n del problema de despliegue en GitHub Pages.
 
 ## Prompt 4 - 2026-05-03
 **Cambios aplicados:**
-- Resincronizaci髇 del repositorio con los 鷏timos logs de prompts para activar el deploy final.
+- Resincronizaci贸n del repositorio con los 煤ltimos logs de prompts para activar el deploy final.
+
+## Prompt 5 - 2026-05-03
+**Cambios aplicados:**
+- Instalaci贸n y configuraci贸n de Tailwind CSS en el proyecto Vite.
+- Extracci贸n de las variables de dise帽o y clases desde el archivo de exportaci贸n de Stitch (`code.html` y `DESIGN.md`).
+- Reescritura completa de los componentes de la interfaz de usuario en `App.jsx` aplicando Tailwind CSS para igualar exactamente el prototipo exportado.
+- Inserci贸n del nuevo logotipo (`Logo-hd.png`) en el header de la aplicaci贸n.
+
+## Prompt 6 - 2026-05-03
+**Cambios aplicados:**
+- Creaci贸n de un plugin personalizado de Vite (`watchCsvPlugin`) en `vite.config.js` que escucha los cambios en los archivos `.csv` de la carpeta `csv/`.
+- Automatizaci贸n del script de ingesti贸n (`ingest_data.js`): al guardar cualquier CSV, los datos JSON se regeneran autom谩ticamente y actualizan la aplicaci贸n en caliente (HMR).
+- Ejecuci贸n manual de la ingesti贸n para forzar la actualizaci贸n inicial de la Jokic League (temporada 2026).
+
+## Prompt 7 - 2026-05-03
+**Cambios aplicados:**
+- Correcci贸n de la ruta del logotipo en la cabecera. Se actualiz贸 el nombre de archivo a min煤sculas (`logo-hd.png`) y se antepuso din谩micamente `import.meta.env.BASE_URL` en `App.jsx` para que la imagen se resuelva correctamente bajo la ruta base configurada (`/fantasy-espn/`) durante el entorno de desarrollo y producci贸n.
+
+## Prompt 8 - 2026-05-03
+**Cambios aplicados:**
+- Eliminaci贸n de elementos visuales innecesarios (usuario, campana, escudo del men煤 lateral).
+- Aplicaci贸n de filtros condicionales: el selector de jugador solo aparece en "Perfil de Jugador" y el de temporada en "Archivo de Temporada".
+- Incorporaci贸n de nuevas tarjetas en "Panel Global" con listados de Campeones y Campeones de Conferencia sin incluir filtros.
+- Divisi贸n de la secci贸n "Premios e Historia" en 5 tablas separadas y responsivas ordenadas cronol贸gicamente.
+- Traducci贸n completa de los textos est谩ticos de la interfaz al espa帽ol.
+- Desarrollo de un script en Node (`generate_avatars.js`) que autom谩ticamente dibuja y exporta avatares SVG profesionales y de est茅tica ne贸n para cada participante a la carpeta `/public/avatars/`.
+- Vinculaci贸n de las nuevas im谩genes de avatares en la UI (Perfil, Sal贸n de la Fama y Premios).
+
+## Prompt 9 - 2026-05-03
+**Cambios aplicados:**
+- Sincronizaci贸n del proyecto con el repositorio remoto de GitHub (git add, commit, push) para asegurar el despliegue de las 煤ltimas novedades.

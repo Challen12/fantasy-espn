@@ -1,10 +1,39 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { exec } from 'child_process'
+
+function watchCsvPlugin() {
+  return {
+    name: 'watch-csv-plugin',
+    configureServer(server) {
+      server.watcher.add('./csv/*.csv');
+      server.watcher.on('change', (file) => {
+        if (file.endsWith('.csv')) {
+          console.log(`\nCSV changed: ${file}. Re-running ingestion...`);
+          exec('node scripts/ingest_data.js', (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Ingestion error: ${error.message}`);
+              return;
+            }
+            if (stderr) console.error(`Ingestion stderr: ${stderr}`);
+            console.log(stdout);
+          });
+        }
+      });
+    },
+    buildStart() {
+      exec('node scripts/ingest_data.js', (error) => {
+        if (error) console.error(`Ingestion error: ${error.message}`);
+      });
+    }
+  }
+}
 
 export default defineConfig({
   base: '/fantasy-espn/',
   plugins: [
+    watchCsvPlugin(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
