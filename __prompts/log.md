@@ -49,3 +49,34 @@
 ## Prompt 9 - 2026-05-03
 **Cambios aplicados:**
 - Sincronización del proyecto con el repositorio remoto de GitHub (git add, commit, push) para asegurar el despliegue de las últimas novedades.
+
+## Prompt 10 - 2026-05-04
+**Cambios aplicados:**
+- Añadida tarjeta resumen y lista de años de "Jokic League" en la pantalla de Perfil de Jugador.
+- Personalizado el Tooltip del gráfico de "Top 10 Puntuación Global" para que los valores se muestren en el verde corporativo al hacer hover.
+- Ajustado el ancho de la columna del Eje Y del gráfico para evitar que los nombres de los participantes se recorten.
+
+## Prompt 11 - 2026-05-04
+**Cambios aplicados:**
+- Creación de un contexto `HoverContext` y un componente envoltorio `PlayerTrigger` para manejar interacciones de hover/touch sobre los nombres de los participantes.
+- Implementación de `HoverCard`, una tarjeta flotante global con posición dinámica, para mostrar de un vistazo rápido el avatar y total de logros del participante (Puntos, Ranking, Campeonatos, Conferencias, MVPs, Playoff y Jokic).
+- Integración de `PlayerTrigger` en múltiples componentes (Dashboard, Perfil, Archivo de Temporadas y Premios) y creación de un Custom Tick en el gráfico de barras para soportar la tarjeta interactiva.
+
+## Prompt 12 - 2026-05-04
+**Cambios aplicados:**
+- Añadida una función centralizada `getAvatarUrl` en `App.jsx` para gestionar las URLs de los avatares dinámicamente.
+- Modificado todo el código de `App.jsx` para usar esta función en lugar de interpolar directamente con la extensión `.svg`.
+- Añadida excepción para que cuando el usuario sea "CHALLEN", la aplicación cargue la extensión `.png` referenciando a `challen.png` en su lugar.
+
+## Prompt 13 - 2026-05-04
+**Cambios aplicados:**
+- Retirado el wrapper `PlayerTrigger` de la cabecera de la vista Perfil de Jugador para evitar mostrar la tarjeta flotante innecesariamente.
+- Implementado el estado `showAllPoints` en el componente Global Dashboard para alternar el límite de datos enviados a `Recharts`.
+- Añadido un botón toggle interactivo y animaciones de altura (`transition-all duration-500 ease-in-out`) en el contenedor del gráfico para revelar la parte inferior de la clasificación de forma elegante.
+
+## Prompt 14 - 2026-05-04
+**Cambios aplicados:**
+- Utilizadas las librerías `sharp` y `png-to-ico` mediante un script temporal de Node.js para escalar imágenes localmente.
+- Generadas versiones optimizadas en las resoluciones nativas PWA: `pwa-192x192.png` y `pwa-512x512.png` a partir del diseño de `logo-hd.png`.
+- Generado `favicon.ico` para asegurar compatibilidad universal en navegadores.
+- Generado `favicon.svg` incrustando en formato Base64 el diseño original para maximizar la calidad en resoluciones retina sin perder sus degradados y colores.

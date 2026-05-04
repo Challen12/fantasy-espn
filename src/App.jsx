@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, createContext, useContext } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import data from './data/fantasy_history.json';
 import './index.css';
@@ -6,17 +6,135 @@ import './index.css';
 const participants = Object.values(data.participants).sort((a, b) => a.globalRank - b.globalRank);
 const seasons = Object.values(data.seasons).sort((a, b) => b.year - a.year);
 
+
+const getAvatarUrl = (name) => {
+  if (!name) return '';
+  if (name.toUpperCase() === 'CHALLEN') return `${import.meta.env.BASE_URL}avatars/challen.png`;
+  return `${import.meta.env.BASE_URL}avatars/${name}.svg`;
+};
+
+const HoverContext = createContext();
+
+const PlayerTrigger = ({ playerName, children, className = "" }) => {
+  const setHoverInfo = useContext(HoverContext);
+  
+  const handleInteract = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHoverInfo({ 
+      player: playerName, 
+      x: rect.left + rect.width / 2, 
+      y: rect.top 
+    });
+  };
+
+  const handleLeave = () => {
+    setHoverInfo({ player: null, x: 0, y: 0 });
+  };
+
+  return (
+    <span 
+      className={`inline-flex items-center gap-2 cursor-pointer group ${className}`}
+      onMouseEnter={handleInteract}
+      onMouseLeave={handleLeave}
+      onClick={handleInteract}
+    >
+      {children}
+    </span>
+  );
+};
+
+const CustomYAxisTick = (props) => {
+  const { x, y, payload } = props;
+  const setHoverInfo = useContext(HoverContext);
+  
+  const handleInteract = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHoverInfo({ 
+      player: payload.value, 
+      x: rect.right, 
+      y: rect.top 
+    });
+  };
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text 
+        x={0} 
+        y={0} 
+        dy={4} 
+        textAnchor="end" 
+        fill="#c4c9ac" 
+        fontSize={12}
+        className="cursor-pointer hover:fill-[#ccff00] transition-colors"
+        onMouseEnter={handleInteract}
+        onMouseLeave={() => setHoverInfo({ player: null, x: 0, y: 0 })}
+        onClick={handleInteract}
+      >
+        {payload.value}
+      </text>
+    </g>
+  );
+};
+
 // Helpers to get top lists for the global dashboard
 const championsCount = [...participants].sort((a, b) => b.championships.length - a.championships.length).filter(p => p.championships.length > 0);
 const confChampionsCount = [...participants].sort((a, b) => b.conferenceChampionships.length - a.conferenceChampionships.length).filter(p => p.conferenceChampionships.length > 0);
 
+const HoverCard = ({ info }) => {
+  if (!info.player) return null;
+  const player = data.participants[info.player];
+  if (!player) return null;
+
+  return (
+    <div 
+      className="fixed z-[100] pointer-events-none transform -translate-x-1/2 -translate-y-full pb-4 transition-opacity duration-200"
+      style={{ left: info.x, top: info.y }}
+    >
+      <div className="glass-card bg-[#1c1b1b]/95 border-outline-variant rounded-xl p-4 shadow-2xl w-64 neon-glow">
+        <div className="flex items-center gap-3 mb-3 border-b border-white/10 pb-3">
+           <img src={getAvatarUrl(player.name)} className="w-10 h-10 rounded-full" alt="" />
+           <div>
+             <h4 className="font-bold text-on-surface text-lg leading-tight">{player.name}</h4>
+             <p className="text-xs text-on-surface-variant uppercase font-label-caps">{player.globalPoints} pts • Rank #{player.globalRank}</p>
+           </div>
+        </div>
+        <div className="space-y-2 text-sm font-['Inter']">
+           <div className="flex justify-between items-center bg-white/5 px-2 py-1.5 rounded">
+             <span className="text-secondary flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">emoji_events</span> Camp:</span>
+             <span className="font-bold text-on-surface">{player.championships.length}</span>
+           </div>
+           <div className="flex justify-between items-center bg-white/5 px-2 py-1.5 rounded">
+             <span className="text-on-surface flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">military_tech</span> Conf:</span>
+             <span className="font-bold text-on-surface">{player.conferenceChampionships.length}</span>
+           </div>
+           <div className="flex justify-between items-center bg-white/5 px-2 py-1.5 rounded">
+             <span className="text-primary-fixed-dim flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">star</span> MVP:</span>
+             <span className="font-bold text-on-surface">{player.mvps.length}</span>
+           </div>
+           <div className="flex justify-between items-center bg-white/5 px-2 py-1.5 rounded">
+             <span className="text-orange-400 flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">local_fire_department</span> Playoff:</span>
+             <span className="font-bold text-on-surface">{player.mvpPlayoffs.length}</span>
+           </div>
+           <div className="flex justify-between items-center bg-white/5 px-2 py-1.5 rounded">
+             <span className="text-blue-400 flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">diamond</span> Jokic:</span>
+             <span className="font-bold text-on-surface">{player.jokicLeague.length}</span>
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const GlobalDashboard = () => {
+  const [showAllPoints, setShowAllPoints] = useState(false);
+
   const chartData = useMemo(() => {
-    return participants.slice(0, 10).map(p => ({
+    const limit = showAllPoints ? participants.length : 10;
+    return participants.slice(0, limit).map(p => ({
       name: p.name,
       points: p.globalPoints
     }));
-  }, []);
+  }, [showAllPoints]);
 
   return (
     <div className="space-y-stack-lg">
@@ -83,15 +201,17 @@ const GlobalDashboard = () => {
                   <span className={`font-display-lg text-display-lg ${numberColor}`}>0{idx + 1}</span>
                 </div>
                 <div className="flex items-center gap-4 mb-6 relative z-10">
-                  <div className={`w-16 h-16 rounded-full border-2 p-1 ${ringColor}`}>
-                    <img src={`${import.meta.env.BASE_URL}avatars/${p.name}.svg`} alt={p.name} className="w-full h-full rounded-full object-cover" />
-                  </div>
-                  <div>
-                    <h3 className="font-headline-md text-xl text-on-surface">{p.name}</h3>
-                    <p className={`font-label-caps text-xs uppercase ${isFirst ? 'text-secondary' : isSecond ? 'text-on-surface-variant' : 'text-orange-600'}`}>
-                      {p.championships.length}X Campeón
-                    </p>
-                  </div>
+                  <PlayerTrigger playerName={p.name} className="hover:text-primary-fixed-dim transition-colors text-left">
+                    <div className={`w-16 h-16 rounded-full border-2 p-1 ${ringColor} shrink-0`}>
+                      <img src={getAvatarUrl(p.name)} alt={p.name} className="w-full h-full rounded-full object-cover" />
+                    </div>
+                    <div>
+                      <h3 className="font-headline-md text-xl text-inherit">{p.name}</h3>
+                      <p className={`font-label-caps text-xs uppercase ${isFirst ? 'text-secondary' : isSecond ? 'text-on-surface-variant' : 'text-orange-600'}`}>
+                        {p.championships.length}X Campeón
+                      </p>
+                    </div>
+                  </PlayerTrigger>
                 </div>
                 <div className="space-y-3 relative z-10">
                   <div className="flex justify-between text-sm">
@@ -109,16 +229,28 @@ const GlobalDashboard = () => {
       </section>
 
       <section className="space-y-stack-md">
-        <h2 className="font-headline-md text-headline-md text-[#ccff00] flex items-center gap-2">
-          <span className="material-symbols-outlined">bar_chart</span>
-          Top 10 Puntuación Global
-        </h2>
-        <div className="glass-card rounded-xl p-6" style={{ height: '400px' }}>
+        <div className="flex items-center justify-between">
+          <h2 className="font-headline-md text-headline-md text-[#ccff00] flex items-center gap-2">
+            <span className="material-symbols-outlined">bar_chart</span>
+            {showAllPoints ? 'Puntuación Global (Todos)' : 'Top 10 Puntuación Global'}
+          </h2>
+          <button 
+            onClick={() => setShowAllPoints(!showAllPoints)}
+            className="text-sm font-label-caps uppercase bg-[#ccff00]/10 text-[#ccff00] px-4 py-2 rounded-full hover:bg-[#ccff00]/20 transition-colors border border-[#ccff00]/30"
+          >
+            {showAllPoints ? 'Ver Top 10' : 'Ver Todos'}
+          </button>
+        </div>
+        <div className="glass-card rounded-xl p-6 transition-all duration-500 ease-in-out" style={{ height: showAllPoints ? '650px' : '400px' }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 0, left: 20, bottom: 0 }}>
               <XAxis type="number" hide />
-              <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#c4c9ac' }} />
-              <Tooltip cursor={{fill: 'rgba(255,255,255,0.05)'}} contentStyle={{ backgroundColor: '#1c1b1b', borderColor: '#444933', color: '#e5e2e1' }} />
+              <YAxis dataKey="name" type="category" width={90} axisLine={false} tickLine={false} tick={<CustomYAxisTick />} />
+              <Tooltip 
+                cursor={{fill: 'rgba(255,255,255,0.05)'}} 
+                contentStyle={{ backgroundColor: '#1c1b1b', borderColor: '#444933', color: '#e5e2e1' }} 
+                itemStyle={{ color: '#ccff00', fontWeight: 'bold' }}
+              />
               <Bar dataKey="points" radius={[0, 4, 4, 0]}>
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={index === 0 ? '#e9c349' : '#abd600'} />
@@ -146,10 +278,14 @@ const GlobalDashboard = () => {
               <tbody className="divide-y divide-white/5">
                 {championsCount.map((p, idx) => (
                   <tr key={`champ-${p.name}`} className="hover:bg-white/5 transition-colors">
-                    <td className="p-4 text-on-surface flex items-center gap-3">
-                      <span className="text-on-surface-variant w-4">{idx + 1}.</span>
-                      <img src={`${import.meta.env.BASE_URL}avatars/${p.name}.svg`} className="w-6 h-6 rounded-full" alt="" />
-                      <span className="font-bold">{p.name}</span>
+                    <td className="p-4 text-on-surface">
+                      <div className="flex items-center gap-3">
+                        <span className="text-on-surface-variant w-4">{idx + 1}.</span>
+                        <PlayerTrigger playerName={p.name} className="hover:text-primary-fixed-dim transition-colors">
+                          <img src={getAvatarUrl(p.name)} className="w-6 h-6 rounded-full" alt="" />
+                          <span className="font-bold text-inherit">{p.name}</span>
+                        </PlayerTrigger>
+                      </div>
                     </td>
                     <td className="p-4 text-secondary font-bold text-right">{p.championships.length}</td>
                   </tr>
@@ -175,10 +311,14 @@ const GlobalDashboard = () => {
               <tbody className="divide-y divide-white/5">
                 {confChampionsCount.map((p, idx) => (
                   <tr key={`conf-${p.name}`} className="hover:bg-white/5 transition-colors">
-                    <td className="p-4 text-on-surface flex items-center gap-3">
-                      <span className="text-on-surface-variant w-4">{idx + 1}.</span>
-                      <img src={`${import.meta.env.BASE_URL}avatars/${p.name}.svg`} className="w-6 h-6 rounded-full" alt="" />
-                      <span className="font-bold">{p.name}</span>
+                    <td className="p-4 text-on-surface">
+                      <div className="flex items-center gap-3">
+                        <span className="text-on-surface-variant w-4">{idx + 1}.</span>
+                        <PlayerTrigger playerName={p.name} className="hover:text-primary-fixed-dim transition-colors">
+                          <img src={getAvatarUrl(p.name)} className="w-6 h-6 rounded-full" alt="" />
+                          <span className="font-bold text-inherit">{p.name}</span>
+                        </PlayerTrigger>
+                      </div>
                     </td>
                     <td className="p-4 text-on-surface font-bold text-right">{p.conferenceChampionships.length}</td>
                   </tr>
@@ -200,24 +340,26 @@ const PlayerProfile = ({ playerName }) => {
   return (
     <div className="space-y-stack-lg">
       <div className="glass-card rounded-xl p-8 relative overflow-hidden border-t-4 border-t-primary-fixed-dim">
-        <div className="flex items-center gap-6 relative z-10">
-          <div className="w-24 h-24 rounded-full border-2 border-primary-fixed-dim p-1 bg-surface-container-highest flex items-center justify-center text-3xl font-display-lg shadow-[0_0_15px_rgba(171,214,0,0.3)]">
-            <img src={`${import.meta.env.BASE_URL}avatars/${player.name}.svg`} alt={player.name} className="w-full h-full rounded-full object-cover" />
-          </div>
-          <div>
-            <h2 className="font-display-lg text-4xl text-on-surface mb-1">{player.name}</h2>
-            <div className="flex flex-wrap items-center gap-3 mt-2">
-              <span className="bg-primary-fixed-dim/20 text-primary-fixed-dim px-3 py-1 rounded-full font-label-caps text-xs uppercase border border-primary-fixed-dim/30">
-                Ranking #{player.globalRank}
-              </span>
-              <span className="text-on-surface-variant font-label-caps uppercase">{player.globalPoints} pts</span>
+        <div className="relative z-10">
+          <div className="text-left flex items-center gap-6">
+            <div className="w-24 h-24 rounded-full border-2 border-primary-fixed-dim p-1 bg-surface-container-highest flex items-center justify-center text-3xl font-display-lg shadow-[0_0_15px_rgba(171,214,0,0.3)] shrink-0">
+              <img src={getAvatarUrl(player.name)} alt={player.name} className="w-full h-full rounded-full object-cover" />
+            </div>
+            <div>
+              <h2 className="font-display-lg text-4xl text-on-surface mb-1">{player.name}</h2>
+              <div className="flex flex-wrap items-center gap-3 mt-2">
+                <span className="bg-primary-fixed-dim/20 text-primary-fixed-dim px-3 py-1 rounded-full font-label-caps text-xs uppercase border border-primary-fixed-dim/30">
+                  Ranking #{player.globalRank}
+                </span>
+                <span className="text-on-surface-variant font-label-caps uppercase">{player.globalPoints} pts</span>
+              </div>
             </div>
           </div>
         </div>
         <span className="material-symbols-outlined text-9xl text-primary-fixed-dim opacity-5 absolute -right-4 top-0">person</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
         <div className="glass-card neon-glow rounded-xl p-6 relative overflow-hidden">
           <div className="relative z-10">
             <p className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Campeonatos</p>
@@ -238,6 +380,13 @@ const PlayerProfile = ({ playerName }) => {
             <p className="font-display-lg text-display-lg text-on-surface">{player.conferenceChampionships.length}</p>
           </div>
           <span className="material-symbols-outlined text-6xl text-on-surface opacity-10 absolute -right-2 -bottom-2">military_tech</span>
+        </div>
+        <div className="glass-card neon-glow rounded-xl p-6 relative overflow-hidden">
+          <div className="relative z-10">
+            <p className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Jokic League</p>
+            <p className="font-display-lg text-display-lg text-blue-400">{player.jokicLeague.length}</p>
+          </div>
+          <span className="material-symbols-outlined text-6xl text-blue-400 opacity-10 absolute -right-2 -bottom-2">diamond</span>
         </div>
       </div>
 
@@ -278,6 +427,24 @@ const PlayerProfile = ({ playerName }) => {
             )}
           </div>
         </div>
+        <div className="glass-card rounded-xl p-6 space-y-4">
+          <h3 className="font-label-caps text-label-caps text-on-surface-variant uppercase border-b border-white/5 pb-2 flex items-center gap-2">
+            <span className="material-symbols-outlined text-blue-400 text-sm">diamond</span>
+            Años Jokic League
+          </h3>
+          <div className="space-y-2">
+            {player.jokicLeague.length > 0 ? (
+              player.jokicLeague.map(y => (
+                <div key={y} className="flex justify-between items-center bg-surface-container-low p-3 rounded-lg border border-white/5">
+                  <span className="text-on-surface font-bold">{y}</span>
+                  <span className="bg-blue-400/20 text-blue-400 px-2 py-1 rounded text-xs uppercase font-bold border border-blue-400/30">Jokic League</span>
+                </div>
+              ))
+            ) : (
+              <div className="text-on-surface-variant p-3">Sin Jokic League aún.</div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -304,9 +471,11 @@ const AwardsView = () => {
               {seasons.filter(s => s.champion).map(s => (
                 <tr key={`champ-${s.year}`} className="hover:bg-white/5 transition-colors">
                   <td className="p-4 text-on-surface font-bold">{s.year}</td>
-                  <td className="p-4 text-secondary font-bold flex items-center gap-3">
-                    <img src={`${import.meta.env.BASE_URL}avatars/${s.champion}.svg`} className="w-6 h-6 rounded-full" alt="" />
-                    {s.champion}
+                  <td className="p-4 text-secondary font-bold">
+                    <PlayerTrigger playerName={s.champion} className="hover:text-[#ccff00] transition-colors">
+                      <img src={getAvatarUrl(s.champion)} className="w-6 h-6 rounded-full" alt="" />
+                      {s.champion}
+                    </PlayerTrigger>
                   </td>
                 </tr>
               ))}
@@ -334,14 +503,18 @@ const AwardsView = () => {
                 <tr key={`conf-${s.year}`} className="hover:bg-white/5 transition-colors">
                   <td className="p-4 text-on-surface font-bold">{s.year}</td>
                   <td className="p-4 text-on-surface">
-                    <div className="flex items-center gap-3">
-                      {s.conferenceA ? <><img src={`${import.meta.env.BASE_URL}avatars/${s.conferenceA}.svg`} className="w-6 h-6 rounded-full" alt="" /> {s.conferenceA}</> : '-'}
-                    </div>
+                    {s.conferenceA ? (
+                      <PlayerTrigger playerName={s.conferenceA} className="hover:text-primary-fixed-dim transition-colors">
+                        <img src={getAvatarUrl(s.conferenceA)} className="w-6 h-6 rounded-full" alt="" /> {s.conferenceA}
+                      </PlayerTrigger>
+                    ) : '-'}
                   </td>
                   <td className="p-4 text-on-surface">
-                    <div className="flex items-center gap-3">
-                      {s.conferenceB ? <><img src={`${import.meta.env.BASE_URL}avatars/${s.conferenceB}.svg`} className="w-6 h-6 rounded-full" alt="" /> {s.conferenceB}</> : '-'}
-                    </div>
+                    {s.conferenceB ? (
+                      <PlayerTrigger playerName={s.conferenceB} className="hover:text-primary-fixed-dim transition-colors">
+                        <img src={getAvatarUrl(s.conferenceB)} className="w-6 h-6 rounded-full" alt="" /> {s.conferenceB}
+                      </PlayerTrigger>
+                    ) : '-'}
                   </td>
                 </tr>
               ))}
@@ -367,9 +540,11 @@ const AwardsView = () => {
               {seasons.filter(s => s.mvp).map(s => (
                 <tr key={`mvp-${s.year}`} className="hover:bg-white/5 transition-colors">
                   <td className="p-4 text-on-surface font-bold">{s.year}</td>
-                  <td className="p-4 text-primary-fixed-dim font-bold flex items-center gap-3">
-                    <img src={`${import.meta.env.BASE_URL}avatars/${s.mvp}.svg`} className="w-6 h-6 rounded-full" alt="" />
-                    {s.mvp}
+                  <td className="p-4 text-primary-fixed-dim font-bold">
+                    <PlayerTrigger playerName={s.mvp} className="hover:text-[#ccff00] transition-colors">
+                      <img src={getAvatarUrl(s.mvp)} className="w-6 h-6 rounded-full" alt="" />
+                      {s.mvp}
+                    </PlayerTrigger>
                   </td>
                 </tr>
               ))}
@@ -395,9 +570,11 @@ const AwardsView = () => {
               {seasons.filter(s => s.mvpPlayoff).map(s => (
                 <tr key={`mvp-playoff-${s.year}`} className="hover:bg-white/5 transition-colors">
                   <td className="p-4 text-on-surface font-bold">{s.year}</td>
-                  <td className="p-4 text-orange-400 font-bold flex items-center gap-3">
-                    <img src={`${import.meta.env.BASE_URL}avatars/${s.mvpPlayoff}.svg`} className="w-6 h-6 rounded-full" alt="" />
-                    {s.mvpPlayoff}
+                  <td className="p-4 text-orange-400 font-bold">
+                    <PlayerTrigger playerName={s.mvpPlayoff} className="hover:text-[#ccff00] transition-colors">
+                      <img src={getAvatarUrl(s.mvpPlayoff)} className="w-6 h-6 rounded-full" alt="" />
+                      {s.mvpPlayoff}
+                    </PlayerTrigger>
                   </td>
                 </tr>
               ))}
@@ -423,9 +600,11 @@ const AwardsView = () => {
               {seasons.filter(s => s.jokicLeague).map(s => (
                 <tr key={`jokic-${s.year}`} className="hover:bg-white/5 transition-colors">
                   <td className="p-4 text-on-surface font-bold">{s.year}</td>
-                  <td className="p-4 text-blue-400 font-bold flex items-center gap-3">
-                    <img src={`${import.meta.env.BASE_URL}avatars/${s.jokicLeague}.svg`} className="w-6 h-6 rounded-full" alt="" />
-                    {s.jokicLeague}
+                  <td className="p-4 text-blue-400 font-bold">
+                    <PlayerTrigger playerName={s.jokicLeague} className="hover:text-[#ccff00] transition-colors">
+                      <img src={getAvatarUrl(s.jokicLeague)} className="w-6 h-6 rounded-full" alt="" />
+                      {s.jokicLeague}
+                    </PlayerTrigger>
                   </td>
                 </tr>
               ))}
@@ -452,8 +631,12 @@ const SeasonView = ({ year }) => {
         <div className="bg-secondary/10 border border-secondary/20 p-6 rounded-xl flex items-center justify-between">
           <div>
             <div className="font-label-caps text-on-surface-variant uppercase mb-1">Campeón</div>
-            <div className="font-headline-md text-2xl text-secondary flex items-center gap-3">
-               {season.champion ? <><img src={`${import.meta.env.BASE_URL}avatars/${season.champion}.svg`} className="w-8 h-8 rounded-full" alt="" /> {season.champion}</> : '-'}
+            <div className="font-headline-md text-2xl text-secondary">
+               {season.champion ? 
+                 <PlayerTrigger playerName={season.champion} className="hover:text-primary-fixed-dim transition-colors">
+                   <img src={getAvatarUrl(season.champion)} className="w-8 h-8 rounded-full" alt="" /> {season.champion}
+                 </PlayerTrigger>
+               : '-'}
             </div>
           </div>
           <span className="material-symbols-outlined text-4xl text-secondary opacity-50">emoji_events</span>
@@ -462,8 +645,12 @@ const SeasonView = ({ year }) => {
         <div className="bg-primary-fixed-dim/10 border border-primary-fixed-dim/20 p-6 rounded-xl flex items-center justify-between">
           <div>
             <div className="font-label-caps text-on-surface-variant uppercase mb-1">MVP</div>
-            <div className="font-headline-md text-2xl text-primary-fixed-dim flex items-center gap-3">
-              {season.mvp ? <><img src={`${import.meta.env.BASE_URL}avatars/${season.mvp}.svg`} className="w-8 h-8 rounded-full" alt="" /> {season.mvp}</> : '-'}
+            <div className="font-headline-md text-2xl text-primary-fixed-dim">
+              {season.mvp ? 
+                <PlayerTrigger playerName={season.mvp} className="hover:text-[#ccff00] transition-colors">
+                  <img src={getAvatarUrl(season.mvp)} className="w-8 h-8 rounded-full" alt="" /> {season.mvp}
+                </PlayerTrigger>
+              : '-'}
             </div>
           </div>
           <span className="material-symbols-outlined text-4xl text-primary-fixed-dim opacity-50">star</span>
@@ -471,29 +658,45 @@ const SeasonView = ({ year }) => {
 
         <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl">
           <div className="font-label-caps text-on-surface-variant uppercase mb-1">MVP Playoff</div>
-          <div className="font-headline-md text-xl text-on-surface flex items-center gap-3">
-             {season.mvpPlayoff ? <><img src={`${import.meta.env.BASE_URL}avatars/${season.mvpPlayoff}.svg`} className="w-6 h-6 rounded-full" alt="" /> {season.mvpPlayoff}</> : '-'}
+          <div className="font-headline-md text-xl text-on-surface">
+             {season.mvpPlayoff ? 
+               <PlayerTrigger playerName={season.mvpPlayoff} className="hover:text-primary-fixed-dim transition-colors">
+                 <img src={getAvatarUrl(season.mvpPlayoff)} className="w-6 h-6 rounded-full" alt="" /> {season.mvpPlayoff}
+               </PlayerTrigger>
+             : '-'}
           </div>
         </div>
 
         <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl">
           <div className="font-label-caps text-on-surface-variant uppercase mb-1">Jokic League</div>
-          <div className="font-headline-md text-xl text-on-surface flex items-center gap-3">
-             {season.jokicLeague ? <><img src={`${import.meta.env.BASE_URL}avatars/${season.jokicLeague}.svg`} className="w-6 h-6 rounded-full" alt="" /> {season.jokicLeague}</> : '-'}
+          <div className="font-headline-md text-xl text-on-surface">
+             {season.jokicLeague ? 
+               <PlayerTrigger playerName={season.jokicLeague} className="hover:text-primary-fixed-dim transition-colors">
+                 <img src={getAvatarUrl(season.jokicLeague)} className="w-6 h-6 rounded-full" alt="" /> {season.jokicLeague}
+               </PlayerTrigger>
+             : '-'}
           </div>
         </div>
 
         <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl">
           <div className="font-label-caps text-on-surface-variant uppercase mb-1">Campeón Conf. A</div>
-          <div className="font-headline-md text-xl text-on-surface flex items-center gap-3">
-             {season.conferenceA ? <><img src={`${import.meta.env.BASE_URL}avatars/${season.conferenceA}.svg`} className="w-6 h-6 rounded-full" alt="" /> {season.conferenceA}</> : '-'}
+          <div className="font-headline-md text-xl text-on-surface">
+             {season.conferenceA ? 
+               <PlayerTrigger playerName={season.conferenceA} className="hover:text-primary-fixed-dim transition-colors">
+                 <img src={getAvatarUrl(season.conferenceA)} className="w-6 h-6 rounded-full" alt="" /> {season.conferenceA}
+               </PlayerTrigger>
+             : '-'}
           </div>
         </div>
 
         <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl">
           <div className="font-label-caps text-on-surface-variant uppercase mb-1">Campeón Conf. B</div>
-          <div className="font-headline-md text-xl text-on-surface flex items-center gap-3">
-             {season.conferenceB ? <><img src={`${import.meta.env.BASE_URL}avatars/${season.conferenceB}.svg`} className="w-6 h-6 rounded-full" alt="" /> {season.conferenceB}</> : '-'}
+          <div className="font-headline-md text-xl text-on-surface">
+             {season.conferenceB ? 
+               <PlayerTrigger playerName={season.conferenceB} className="hover:text-primary-fixed-dim transition-colors">
+                 <img src={getAvatarUrl(season.conferenceB)} className="w-6 h-6 rounded-full" alt="" /> {season.conferenceB}
+               </PlayerTrigger>
+             : '-'}
           </div>
         </div>
       </div>
@@ -505,9 +708,12 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('global');
   const [selectedPlayer, setSelectedPlayer] = useState('');
   const [selectedSeason, setSelectedSeason] = useState('');
+  const [hoverInfo, setHoverInfo] = useState({ player: null, x: 0, y: 0 });
 
   return (
+    <HoverContext.Provider value={setHoverInfo}>
     <div className="min-h-screen bg-surface text-on-surface antialiased flex flex-col md:flex-row">
+      <HoverCard info={hoverInfo} />
       {/* Sidebar for Desktop */}
       <aside className="hidden xl:flex fixed left-0 top-0 h-full w-80 bg-[#0a0a0a] border-r border-white/10 flex-col py-8 px-4 z-[60] shadow-2xl shadow-black divide-y divide-white/5">
         <div className="pb-6 px-4 pt-10">
@@ -622,5 +828,6 @@ export default function App() {
         </button>
       </nav>
     </div>
+    </HoverContext.Provider>
   );
 }

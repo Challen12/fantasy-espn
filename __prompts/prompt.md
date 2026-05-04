@@ -134,3 +134,75 @@ Respuestas a    tus preguntas
 3. La Clasificación Global es un archivo que tiene la clasificación global de todos los participantes en cada temporada sumando todos los puntos, es el histórico de puntos sumados de todos los años.
 
 Sabiendo esto, ejecuta el plan
+
+----------
+
+Genial, la visual está de lujo, ahora vamos a terminar de perfilas funcionaldiades y lógica.
+
+Asume el rol de un desarrollador experto en javascript, html, css y tailwind css.
+
+1. Elimina el icono de usuario y campana de la parte superior derecha de la aplicación ya que no se utilizan
+2. Elimina el shield y el texto "COMMISH ADMIN EST. 2015" del lateral izquierdo de la aplicación.
+2. En la vista "Global Dashboard" añade tarjetas con todas las clasificaciones disponibles. Siendo el panel general de información más relevante de la liga. En esta pantalla no debe haber filtros solo los datos globales siendo el dato más importante el que se encuentra en /csv/FANTASY-ESPN-CLASIFICACION-GLOBAL.csv. El segundo dato más importante son los campeones, y es el que se encuentra en /csv/FANTASY-ESPN-CAMPEONES.csv y el tercer dato más importante es el campeón de conferencia que se encuentra en /csv/FANTASY-ESPN-CAMPEON-DE-CONFERENCIA.csv.
+3. En la vista "Player Profile" deben aparecer los filtros solo de jugador, el que empieza con select player y que interactue con el contenido de la vista mostrando todos los datos del jugador seleccionado.
+4. En la parte Season Archive debe aparecer el filtro de temporada con todos los años disponibles. Al seleccionar el filtro debe modificarse la visualización mostrando los datos de la temporada seleccionada.
+5. En Adwards & Story debe incluirse la tabla detallada de MVPs, MVP Playoff, Jokic League y Campeones de Conferencia. Los datos deben estar correctamente ordenados cronológicamente y relacionados con su temporada correspondiente. Debe aparecer el nombre del ganador, la temporada y el tipo de premio. El diseño debe ser elegante y acorde a la estética general de la aplicación.Separa las tarjetas por tipo de premio.
+
+    - Campeones
+    - Campeones de Conferencia
+    - MVP   
+    - MVP Playoff
+    - Jokic League
+6. Todo el contenido debe estar en español. Tradúcelo, respeta únicamente los nombres que hacen referencia a los participantes y nombres propios como "Jokic League".
+7. Ten en cuenta que esta aplicación debe funcionar en dispositivos móviles por lo que debe ser responsive y adaptarse a diferentes tamaños de pantalla. Por lo tanto, asegúrate de que la aplicación sea responsive y se adapte a diferentes tamaños de pantalla, optimizando la experiencia de usuario para dispositivos móviles.
+8. Genera avatares de prueba para cada participante. Para ello, crea una carpeta en la raiz de la aplicación llamada public y dentro de ella crea una carpeta avatars. Dentro de ella crea los avatares de cada participante.
+
+### Corrección de errores y funcionalidades en Dashboard y Perfil
+Puntos clave del prompt:
+- Añadir la tarjeta de "Jokic League" ganadas en el perfil de jugador.
+- Cambiar el color de texto en el tooltip del Top 10 Puntuación global a verde corporativo.
+- Ajustar el ancho de la columna de nombres en el gráfico para que no se recorten.
+
+---
+Actúa como un desarrollador experto en react.js
+Vamos a seguir fixeando errores y añadiendo funcionalidades:
+1. En la pantalla de Perfil de Jugador añade una tarjeta donde especifique las "Jokic League" que ha ganado el jugador en concreto como se muestran el resto de trofeos
+2. En el Panel Global en la tarjeta de Top 10 Puntuación global, al hacer hover el texto de los puntos ha de verse en el verde corporativo. Ajusta la columna de nombres para que aparezcan completos ya que algunos se cortan
+
+### Tarjeta interactiva flotante de logros
+Puntos clave del prompt:
+- Crear una tarjeta resumen con todos los títulos de cada categoría de cada participante.
+- Mostrar dicha tarjeta al hacer hover o tap en el nombre del participante en Panel Global, Perfil, Archivo y Premios.
+- Mostrar también el avatar en dicha tarjeta.
+
+---
+Actúa como un desarrollador experto en react.js
+Vamos a añadir otra funcionalidad que me parece interesante. Me gustaría que al hacer "hover" o pulsar en pantallas táctiles en los nombres de los participantes, aparezca una tarjeta con un resumen de todos los títulos conseguidos de cada categoría. Un resumen directo sin años, solo con los totales. Esta funcionalidad debe estar en "Panel Global", "Perfil de Jugador", "Archivo de temporada", "Premios e Historia". En esa tarjeta debe aparecer también el avatar.
+
+### Cambio de avatar de Challen
+Puntos clave del prompt:
+- Reemplazar el avatar SVG de Challen por el archivo PNG proporcionado (`challen.png`).
+- Implementar un sistema para que la app cargue de manera dinámica el formato correcto según el usuario.
+
+---
+Cambia el avatar del usuario Challen (CHALLEN.SVG) por este: challen.png
+
+### Ajustes menores en Perfil y Global Dashboard
+Puntos clave del prompt:
+- Desactivar la tarjeta flotante (`PlayerTrigger`) en la cabecera de la vista 'Perfil de Jugador'.
+- Añadir un botón toggle en el gráfico del Top 10 del Panel Global para expandir/contraer la clasificación a todos los participantes.
+
+---
+Actúa como un desarrollador experto en react.js
+Vamos a fixear otro par de cosas
+1. En la vista de "Perfil de jugador" no tiene que funcionar el hover al hacer hover o tap en el nombre ya que estás en la propia ficha del jugador.
+2. En la vista Panel Global, en la sección Top 10 puntuación Global, realiza un botón que despliegue el resto de participantes con sus puntuaciones, para así poder ver el completo histórico de jugadores, con un efecto toggle que descubra la parte de la clasificación que falta
+
+### Generación de Favicon y PWA icons
+Puntos clave del prompt:
+- A partir del diseño en `logo-hd.png`, generar los diferentes formatos que necesita la aplicación PWA (`favicon.ico`, `favicon.svg`, `pwa-192x192.png`, `pwa-512x512.png`).
+- No se pide alterar la funcionalidad sino mantener el mismo estilo estético de la aplicación.
+
+---
+Basándote en el archivo logo-hd.png genera un nuevo favicon.ico, favicon.svg, pwa-192x192.png, pwa-512x512.pmg respetando el diseño de logo-hd.png para que todo quede en el mismo estilo estético. No hay ningún cambio de funcionalidad, solo modificar el icono de aplicación como indico
+
