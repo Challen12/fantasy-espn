@@ -85,10 +85,14 @@ const HoverCard = ({ info }) => {
   const player = data.participants[info.player];
   if (!player) return null;
 
+  // En dispositivos móviles (o si está muy al borde), limitamos la tarjeta para que no se salga de la pantalla.
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const safeX = typeof window !== 'undefined' ? Math.max(140, Math.min(window.innerWidth - 140, info.x)) : info.x;
+
   return (
     <div 
-      className="fixed z-[100] pointer-events-none transform -translate-x-1/2 -translate-y-full pb-4 transition-opacity duration-200"
-      style={{ left: info.x, top: info.y }}
+      className={`fixed z-[100] pointer-events-none transition-opacity duration-200 ${isMobile ? '' : 'transform -translate-x-1/2 -translate-y-full pb-4'}`}
+      style={isMobile ? { left: '50%', top: '50%', transform: 'translate(-50%, -50%)' } : { left: safeX, top: info.y }}
     >
       <div className="glass-card bg-[#1c1b1b]/95 border-outline-variant rounded-xl p-4 shadow-2xl w-64 neon-glow">
         <div className="flex items-center gap-3 mb-3 border-b border-white/10 pb-3">
@@ -333,12 +337,57 @@ const GlobalDashboard = () => {
   );
 };
 
-const PlayerProfile = ({ playerName }) => {
-  if (!playerName) return null;
+const PlayerProfile = ({ playerName, onPlayerSelect }) => {
+  if (!playerName) {
+    const sortedPlayers = [...participants].sort((a, b) => b.globalPoints - a.globalPoints);
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+        {sortedPlayers.map(p => (
+           <div 
+             key={p.name} 
+             onClick={() => onPlayerSelect && onPlayerSelect(p.name)}
+             className="glass-card rounded-xl p-6 relative overflow-hidden group cursor-pointer hover:border-primary-fixed-dim/50 transition-colors"
+           >
+             <div className="flex items-center gap-4 relative z-10 mb-4">
+                <div className="w-16 h-16 rounded-full border-2 border-primary-fixed-dim p-1 shrink-0">
+                  <img src={getAvatarUrl(p.name)} alt={p.name} className="w-full h-full rounded-full object-cover" />
+                </div>
+                <div>
+                  <h3 className="font-headline-md text-xl text-on-surface group-hover:text-primary-fixed-dim transition-colors">{p.name}</h3>
+                  <p className="text-xs text-on-surface-variant font-label-caps uppercase">{p.globalPoints} pts • Rank #{p.globalRank}</p>
+                </div>
+             </div>
+             <div className="grid grid-cols-3 gap-2 text-sm relative z-10">
+                <div className="bg-white/5 p-2 rounded text-center">
+                  <span className="block text-secondary font-bold">{p.championships.length}</span>
+                  <span className="text-[10px] text-on-surface-variant uppercase">Camp</span>
+                </div>
+                <div className="bg-white/5 p-2 rounded text-center">
+                  <span className="block text-primary-fixed-dim font-bold">{p.mvps.length}</span>
+                  <span className="text-[10px] text-on-surface-variant uppercase">MVP</span>
+                </div>
+                <div className="bg-white/5 p-2 rounded text-center">
+                  <span className="block text-blue-400 font-bold">{p.jokicLeague.length}</span>
+                  <span className="text-[10px] text-on-surface-variant uppercase">Jokic</span>
+                </div>
+             </div>
+           </div>
+        ))}
+      </div>
+    );
+  }
+
   const player = data.participants[playerName];
 
   return (
     <div className="space-y-stack-lg">
+      <button 
+        onClick={() => onPlayerSelect && onPlayerSelect(null)}
+        className="flex items-center gap-2 text-on-surface-variant hover:text-primary-fixed-dim transition-colors text-sm font-label-caps uppercase w-fit"
+      >
+        <span className="material-symbols-outlined text-sm">arrow_back</span>
+        Ver todos los jugadores
+      </button>
       <div className="glass-card rounded-xl p-8 relative overflow-hidden border-t-4 border-t-primary-fixed-dim">
         <div className="relative z-10">
           <div className="text-left flex items-center gap-6">
@@ -617,13 +666,63 @@ const AwardsView = () => {
   );
 };
 
-const SeasonView = ({ year }) => {
-  if (!year) return null;
+const SeasonView = ({ year, onSeasonSelect }) => {
+  if (!year) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+        {seasons.map(s => (
+          <div 
+            key={s.year} 
+            onClick={() => onSeasonSelect && onSeasonSelect(s.year)}
+            className="glass-card rounded-xl p-6 flex flex-col relative overflow-hidden group cursor-pointer hover:border-primary-fixed-dim/50 transition-colors"
+          >
+            <h3 className="font-display-lg text-3xl text-primary-fixed-dim mb-4 relative z-10 group-hover:scale-105 transition-transform origin-left">{s.year}</h3>
+            <div className="grid grid-cols-2 gap-2 text-xs relative z-10">
+                 <div className="bg-white/5 p-2 rounded flex flex-col justify-between">
+                   <span className="text-on-surface-variant mb-1 uppercase font-label-caps text-[10px]">Campeón</span>
+                   <span className="font-bold text-secondary truncate flex items-center gap-1">{s.champion && <img src={getAvatarUrl(s.champion)} className="w-3 h-3 rounded-full" alt=""/>}{s.champion || '-'}</span>
+                 </div>
+                 <div className="bg-white/5 p-2 rounded flex flex-col justify-between">
+                   <span className="text-on-surface-variant mb-1 uppercase font-label-caps text-[10px]">MVP</span>
+                   <span className="font-bold text-primary-fixed-dim truncate flex items-center gap-1">{s.mvp && <img src={getAvatarUrl(s.mvp)} className="w-3 h-3 rounded-full" alt=""/>}{s.mvp || '-'}</span>
+                 </div>
+                 <div className="bg-white/5 p-2 rounded flex flex-col justify-between">
+                   <span className="text-on-surface-variant mb-1 uppercase font-label-caps text-[10px]">MVP PO</span>
+                   <span className="font-bold text-blue-400 truncate flex items-center gap-1">{s.mvpPlayoff && <img src={getAvatarUrl(s.mvpPlayoff)} className="w-3 h-3 rounded-full" alt=""/>}{s.mvpPlayoff || '-'}</span>
+                 </div>
+                 <div className="bg-white/5 p-2 rounded flex flex-col justify-between">
+                   <span className="text-on-surface-variant mb-1 uppercase font-label-caps text-[10px]">Jokic L.</span>
+                   <span className="font-bold text-blue-400 truncate flex items-center gap-1">{s.jokicLeague && <img src={getAvatarUrl(s.jokicLeague)} className="w-3 h-3 rounded-full" alt=""/>}{s.jokicLeague || '-'}</span>
+                 </div>
+                 <div className="bg-white/5 p-2 rounded flex flex-col justify-between">
+                   <span className="text-on-surface-variant mb-1 uppercase font-label-caps text-[10px]">Conf. A</span>
+                   <span className="font-bold text-on-surface truncate flex items-center gap-1">{s.conferenceA && <img src={getAvatarUrl(s.conferenceA)} className="w-3 h-3 rounded-full" alt=""/>}{s.conferenceA || '-'}</span>
+                 </div>
+                 <div className="bg-white/5 p-2 rounded flex flex-col justify-between">
+                   <span className="text-on-surface-variant mb-1 uppercase font-label-caps text-[10px]">Conf. B</span>
+                   <span className="font-bold text-on-surface truncate flex items-center gap-1">{s.conferenceB && <img src={getAvatarUrl(s.conferenceB)} className="w-3 h-3 rounded-full" alt=""/>}{s.conferenceB || '-'}</span>
+                 </div>
+            </div>
+            <span className="material-symbols-outlined text-8xl text-primary-fixed-dim opacity-5 absolute -right-4 -bottom-4 group-hover:scale-110 transition-transform">calendar_month</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   const season = data.seasons[year];
 
   return (
-    <div className="glass-card rounded-xl p-8 space-y-8">
-      <div className="border-b border-white/10 pb-4">
+    <div className="space-y-stack-lg">
+      <button 
+        onClick={() => onSeasonSelect && onSeasonSelect(null)}
+        className="flex items-center gap-2 text-on-surface-variant hover:text-primary-fixed-dim transition-colors text-sm font-label-caps uppercase w-fit"
+      >
+        <span className="material-symbols-outlined text-sm">arrow_back</span>
+        Ver todas las temporadas
+      </button>
+      <div className="glass-card rounded-xl p-8 space-y-8">
+        <div className="border-b border-white/10 pb-4">
         <h2 className="font-display-lg text-4xl text-on-surface">Resumen Temporada {year}</h2>
       </div>
       
@@ -699,6 +798,7 @@ const SeasonView = ({ year }) => {
              : '-'}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -794,8 +894,8 @@ export default function App() {
 
           {/* Tab Content */}
           {activeTab === 'global' && <GlobalDashboard />}
-          {activeTab === 'player' && (selectedPlayer ? <PlayerProfile playerName={selectedPlayer} /> : <div className="text-center text-on-surface-variant p-10 glass-card rounded-xl">Por favor selecciona un jugador en el filtro superior.</div>)}
-          {activeTab === 'season' && (selectedSeason ? <SeasonView year={selectedSeason} /> : <div className="text-center text-on-surface-variant p-10 glass-card rounded-xl">Por favor selecciona una temporada en el filtro superior.</div>)}
+          {activeTab === 'player' && <PlayerProfile playerName={selectedPlayer} onPlayerSelect={setSelectedPlayer} />}
+          {activeTab === 'season' && <SeasonView year={selectedSeason} onSeasonSelect={setSelectedSeason} />}
           {activeTab === 'awards' && <AwardsView />}
         </main>
       </div>
