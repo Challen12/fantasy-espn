@@ -1,4 +1,4 @@
-import React, { useState, useMemo, createContext, useContext } from 'react';
+import React, { useState, useMemo, createContext, useContext, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import data from './data/fantasy_history.json';
 import './index.css';
@@ -10,6 +10,7 @@ const seasons = Object.values(data.seasons).sort((a, b) => b.year - a.year);
 const getAvatarUrl = (name) => {
   if (!name) return '';
   if (name.toUpperCase() === 'CHALLEN') return `${import.meta.env.BASE_URL}avatars/challen.png`;
+  if (name.toUpperCase() === 'ILDKRAFT') return `${import.meta.env.BASE_URL}avatars/ildkraft.png`;
   return `${import.meta.env.BASE_URL}avatars/${name}.svg`;
 };
 
@@ -804,11 +805,96 @@ const SeasonView = ({ year, onSeasonSelect }) => {
   );
 };
 
+const PointsSystemView = () => {
+  return (
+    <div className="space-y-stack-lg">
+      <div className="glass-card rounded-xl p-8 space-y-8">
+        <div className="border-b border-white/10 pb-4">
+          <h2 className="font-display-lg text-4xl text-[#ccff00]">Sistema de Puntos</h2>
+          <p className="text-on-surface-variant mt-2 font-label-caps uppercase tracking-wider">¿Cómo se obtienen las puntuaciones?</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl space-y-3">
+            <h3 className="font-headline-md text-xl text-primary-fixed-dim border-b border-white/10 pb-2 mb-3">Temporada Regular</h3>
+            <ul className="space-y-3 text-on-surface">
+              <li className="flex items-center gap-3"><span className="text-xl">🥇</span> 3 pts</li>
+              <li className="flex items-center gap-3"><span className="text-xl">🥈</span> 2 pts</li>
+              <li className="flex items-center gap-3"><span className="text-xl">🥉</span> 1 pt</li>
+            </ul>
+          </div>
+
+          <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl space-y-3">
+            <h3 className="font-headline-md text-xl text-primary-fixed-dim border-b border-white/10 pb-2 mb-3">Playoffs</h3>
+            <ul className="space-y-3 text-on-surface">
+              <li className="flex items-center gap-3"><span className="text-xl">🏅</span> 3 pts</li>
+            </ul>
+          </div>
+
+          <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl space-y-3">
+            <h3 className="font-headline-md text-xl text-primary-fixed-dim border-b border-white/10 pb-2 mb-3">Pronósticos</h3>
+            <ul className="space-y-3 text-on-surface">
+              <li className="flex items-start gap-3"><span className="text-primary-fixed-dim">•</span> Pronóstico Play-in: 1 pt</li>
+              <li className="flex items-start gap-3"><span className="text-primary-fixed-dim">•</span> <span>Pronóstico Finales Playoffs: 1 pt <span className="text-xs text-on-surface-variant block mt-1">(+3 pts si aciertas partidos)</span></span></li>
+            </ul>
+          </div>
+
+          <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl space-y-3">
+            <h3 className="font-headline-md text-xl text-primary-fixed-dim border-b border-white/10 pb-2 mb-3">Final de Temporada</h3>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-on-surface">
+              <div className="flex items-center gap-3"><span className="text-xl">🥇</span> 15 pts</div>
+              <div className="flex items-center gap-3"><span className="font-bold text-on-surface-variant w-6 text-center">5º</span> 7 pts</div>
+              <div className="flex items-center gap-3"><span className="text-xl">🥈</span> 12 pts</div>
+              <div className="flex items-center gap-3"><span className="font-bold text-on-surface-variant w-6 text-center">6º</span> 6 pts</div>
+              <div className="flex items-center gap-3"><span className="text-xl">🥉</span> 10 pts</div>
+              <div className="flex items-center gap-3"><span className="font-bold text-on-surface-variant w-6 text-center">7º</span> 5 pts</div>
+              <div className="flex items-center gap-3"><span className="font-bold text-on-surface-variant w-6 text-center">4º</span> 8 pts</div>
+              <div className="flex items-center gap-3"><span className="font-bold text-on-surface-variant w-6 text-center">8º</span> 4 pts</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 className="font-display-lg text-2xl text-secondary pt-6 border-t border-white/10">Otras puntuaciones</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+          <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl space-y-3">
+            <h4 className="font-headline-md text-lg text-white mb-2">Pronósticos Extra</h4>
+            <ul className="space-y-3 text-on-surface text-sm">
+              <li className="flex items-start gap-2"><span>✅</span> 1 pt por pronóstico acertado</li>
+              <li className="flex items-start gap-2"><span>✅</span> 3 pt por pronóstico sorpresa/decepción</li>
+            </ul>
+          </div>
+          <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl space-y-3">
+            <h4 className="font-headline-md text-lg text-blue-400 mb-2">Jokic League</h4>
+            <ul className="space-y-3 text-on-surface text-sm">
+              <li className="flex gap-2"><span className="font-bold text-blue-400 w-6">9º</span> Pick 1 del Draft siguiente</li>
+              <li className="flex gap-2"><span className="font-bold text-blue-400 w-6">10º</span> Pick 2 del Draft siguiente</li>
+              <li className="flex gap-2"><span className="font-bold text-on-surface-variant w-6">11º</span> Nada</li>
+              <li className="flex gap-2"><span className="font-bold text-on-surface-variant w-6">12º</span> Nada</li>
+            </ul>
+          </div>
+          <div className="bg-surface-container-low border border-white/5 p-6 rounded-xl space-y-3">
+            <h4 className="font-headline-md text-lg text-yellow-400 mb-2 flex items-center gap-2"><span>⭐</span> All Star</h4>
+            <ul className="space-y-3 text-on-surface text-sm">
+              <li className="flex items-center gap-2"><span className="material-symbols-outlined text-[16px] text-yellow-400">star</span> MVP (máxima): 1 pt</li>
+              <li className="flex items-center gap-2"><span className="material-symbols-outlined text-[16px] text-yellow-400">group</span> Equipo ganador: 1 pt</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('global');
   const [selectedPlayer, setSelectedPlayer] = useState('');
   const [selectedSeason, setSelectedSeason] = useState('');
   const [hoverInfo, setHoverInfo] = useState({ player: null, x: 0, y: 0 });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab, selectedPlayer, selectedSeason]);
 
   return (
     <HoverContext.Provider value={setHoverInfo}>
@@ -841,6 +927,12 @@ export default function App() {
               className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 font-['Inter'] text-sm font-semibold ${activeTab === 'awards' ? 'bg-[#ccff00]/10 text-[#ccff00] border-l-4 border-[#ccff00]' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>
               <span className="material-symbols-outlined">emoji_events</span>
               Premios e Historia
+            </button>
+            <button 
+              onClick={() => setActiveTab('points')}
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 font-['Inter'] text-sm font-semibold ${activeTab === 'points' ? 'bg-[#ccff00]/10 text-[#ccff00] border-l-4 border-[#ccff00]' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>
+              <span className="material-symbols-outlined">format_list_numbered</span>
+              Sistema de Puntos
             </button>
           </nav>
         </div>
@@ -897,6 +989,7 @@ export default function App() {
           {activeTab === 'player' && <PlayerProfile playerName={selectedPlayer} onPlayerSelect={setSelectedPlayer} />}
           {activeTab === 'season' && <SeasonView year={selectedSeason} onSeasonSelect={setSelectedSeason} />}
           {activeTab === 'awards' && <AwardsView />}
+          {activeTab === 'points' && <PointsSystemView />}
         </main>
       </div>
 
@@ -925,6 +1018,12 @@ export default function App() {
           className={`flex flex-col items-center justify-center transition-all ${activeTab === 'awards' ? 'text-[#ccff00] bg-[#ccff00]/10 rounded-xl px-3 py-1 ring-1 ring-[#ccff00]/30' : 'text-gray-500 opacity-60 hover:text-[#ccff00] hover:opacity-100 px-3 py-1'}`}>
           <span className="material-symbols-outlined">emoji_events</span>
           <span className="text-[10px] font-bold uppercase tracking-tighter mt-1">Premios</span>
+        </button>
+        <button 
+          onClick={() => setActiveTab('points')}
+          className={`flex flex-col items-center justify-center transition-all ${activeTab === 'points' ? 'text-[#ccff00] bg-[#ccff00]/10 rounded-xl px-3 py-1 ring-1 ring-[#ccff00]/30' : 'text-gray-500 opacity-60 hover:text-[#ccff00] hover:opacity-100 px-3 py-1'}`}>
+          <span className="material-symbols-outlined">format_list_numbered</span>
+          <span className="text-[10px] font-bold uppercase tracking-tighter mt-1">Puntos</span>
         </button>
       </nav>
     </div>
