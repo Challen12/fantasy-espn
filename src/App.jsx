@@ -9,8 +9,26 @@ const seasons = Object.values(data.seasons).sort((a, b) => b.year - a.year);
 
 const getAvatarUrl = (name) => {
   if (!name) return '';
-  if (name.toUpperCase() === 'CHALLEN') return `${import.meta.env.BASE_URL}avatars/challen.png`;
-  if (name.toUpperCase() === 'ILDKRAFT') return `${import.meta.env.BASE_URL}avatars/ildkraft.png`;
+  const normalizedName = name.toUpperCase();
+  
+  const pngAvatars = {
+    'CHALLEN': 'challen.png',
+    'ILDKRAFT': 'ildkraft.png',
+    'COLLERA': 'collera.png',
+    'IVÁN': 'ivan.png',
+    'JOSE': 'jose.png',
+    'JOTA': 'jota.png',
+    'KELE': 'kele.png',
+    'MARCOS': 'marcos.png',
+    'MUSTI': 'musti.png',
+    'RACRACK': 'racrack.png',
+    'TOTTI': 'totti.png'
+  };
+
+  if (pngAvatars[normalizedName]) {
+    return `${import.meta.env.BASE_URL}avatars/${pngAvatars[normalizedName]}`;
+  }
+
   return `${import.meta.env.BASE_URL}avatars/${name}.svg`;
 };
 
